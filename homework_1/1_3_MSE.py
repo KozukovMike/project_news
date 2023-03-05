@@ -1,7 +1,7 @@
 from typing import List, Union
 
 
-inp = [-0.1, -2.0, 1.0, 1.8, 0.8]
+inp = [-0.1, -2.0, 1.0, 1.8, 0.9]
 
 
 def mse_score(items: List[Union[float,  int]]) -> float:
