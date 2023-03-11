@@ -26,7 +26,7 @@ tourists = tourists.drop(['last_name', 'first_name', 'age', 'id'], axis=1)
 
 
 def knn(base: np.ndarray, entities: np.ndarray, ax_0: int, ax_1: int) -> np.ndarray:
-    return np.argsort(cdist(base, entities), axis=1)[:ax_0, :ax_1]
+    return pd.DataFrame(data=np.argsort(cdist(base, entities), axis=1)[:ax_0, :ax_1])
 
 
 a = knn(tourists, restaurants, 3, 5)
