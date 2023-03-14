@@ -71,10 +71,5 @@ restaurants = restaurants.drop(['type', 'id'], axis=1)
 tourists = tourists.drop(['last_name', 'first_name', 'age', 'id'], axis=1)
 a = cdist(restaurants, restaurants)
 u = DBScan(restaurants)
-# p = u.get_random_point()
-# print(p)
 d = u.make_groups(0.05, 5)
-# itog = 0
-for key, value in d.items():
-    print(key, value)
-# print(itog)
+
