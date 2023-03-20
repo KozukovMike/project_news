@@ -71,5 +71,7 @@ restaurants = restaurants.drop(['type', 'id'], axis=1)
 tourists = tourists.drop(['last_name', 'first_name', 'age', 'id'], axis=1)
 a = cdist(restaurants, restaurants)
 u = DBScan(restaurants)
-d = u.make_groups(0.05, 5)
+d = u.make_groups(0.12, 5)
+for value in d.values():
+    print(value)
 

@@ -1,6 +1,7 @@
 import sqlite3
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 from numpy.random import default_rng
 from typing import Union
@@ -58,8 +59,26 @@ class Hello:
 
     def optimize_centroids(self, centroids: np.ndarray, flag: bool = False) -> Union[pd.DataFrame, np.ndarray]:
         while True:
+            fig, ax = plt.subplots(figsize=(11, 5))
+            _ = ax.scatter(x=self.entities["lat"], y=self.entities["lng"], s=10, c="firebrick", edgecolors="black",
+                           linewidths=0.5, alpha=0.5)
+            df = pd.DataFrame(centroids, columns=['lat', 'lng'])
+            _ = ax.scatter(x=df["lat"], y=df["lng"], s=10, c="blue",
+                           linewidths=3, alpha=1)
+            plt.show()
+            plt.close(fig)
+            # print(pd.DataFrame(centroids, columns=['lat', 'lng']))
             groups = self.find_closest_centroids(centroids=centroids, flag=False)
             current_centroids = self.group_by_centroids_and_update(groups=groups, flag=False)
+            # print(len(current_centroids))
+            # если мы хотим добавить сентроиды(при условии что их стало меньше), если нет,
+            # то просто убираем этот if и сентроидов будет меньше
+            if len(centroids) != len(current_centroids):
+                # print('enter')
+                buf = self.make_random_centroids(len(centroids) - len(current_centroids), False)
+                current_centroids = np.concatenate((current_centroids, buf))
+            # print(len(current_centroids))
+            # print(pd.DataFrame(centroids, columns=['lat', 'lng']))
             if np.array_equal(current_centroids, centroids):
                 if flag:
                     return pd.DataFrame(data=current_centroids)
@@ -89,7 +108,7 @@ tourists = tourists.drop(['last_name', 'first_name', 'age', 'id'], axis=1)
 a = Hello(tourists, restaurants)
 f = a.knn(3, 5)
 print(f)
-f = a.make_random_centroids(6, False)
+f = a.make_random_centroids(20, False)
 print(f)
 itog = a.optimize_centroids(f)
 print(itog)
