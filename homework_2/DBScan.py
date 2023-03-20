@@ -1,6 +1,7 @@
 import sqlite3
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 from numpy.random import default_rng
 from typing import Union, Dict, Iterable, List
@@ -51,14 +52,14 @@ class DBScan:
 
 
 sql_tour = """
-SELECT id, first_name, last_name, age, lat, lng
+SELECT lat, lng
 FROM
     tourists INNER JOIN zip_codes ON
     tourists.zip = zip_codes.zip
 ORDER BY id
 ;"""
 sql_restaurants = """
-SELECT id, type, lat, lng
+SELECT lat, lng
 FROM 
 	restaurants INNER JOIN zip_codes ON
 	restaurants.zip = zip_codes.zip 
@@ -67,11 +68,8 @@ ORDER BY id
 con = sqlite3.Connection("data/hw2.sqlite")
 restaurants = pd.read_sql(sql=sql_restaurants, con=con)
 tourists = pd.read_sql(sql=sql_tour, con=con)
-restaurants = restaurants.drop(['type', 'id'], axis=1)
-tourists = tourists.drop(['last_name', 'first_name', 'age', 'id'], axis=1)
-a = cdist(restaurants, restaurants)
 u = DBScan(restaurants)
-d = u.make_groups(0.12, 5)
+d = u.make_groups(0.04, 5)
+print(u.groups)
 for value in d.values():
     print(value)
-
