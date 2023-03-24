@@ -1,6 +1,7 @@
 import sqlite3
 import numpy as np
 import pandas as pd
+import  sys
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 from numpy.random import default_rng
@@ -65,11 +66,13 @@ FROM
 	restaurants.zip = zip_codes.zip 
 ORDER BY id
 ;"""
+sys.setrecursionlimit(2000)
+# print(sys.getrecursionlimit())
 con = sqlite3.Connection("data/hw2.sqlite")
 restaurants = pd.read_sql(sql=sql_restaurants, con=con)
 tourists = pd.read_sql(sql=sql_tour, con=con)
 u = DBScan(restaurants)
-d = u.make_groups(0.04, 5)
-print(u.groups)
+d = u.make_groups(0.14, 5)
+# print(u.groups)
 for value in d.values():
     print(value)
