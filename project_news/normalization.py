@@ -20,3 +20,4 @@ def normalize(l_news: List[News]) -> List[NormalizedNews]:
             )
         )
     return res
+
