@@ -48,3 +48,4 @@ def df_where_word_in(df: pd.DataFrame, word: str) -> pd.DataFrame:
     current_ind = np.where(df_copy['title'] == True)
     df_copy = df.loc[current_ind].copy()
     return df_copy
+
