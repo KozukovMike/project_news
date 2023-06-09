@@ -7,6 +7,7 @@ from normalize import df_where_word_in
 from charts import Chart
 from sentiment_analysis import SentimentAnalysis
 from datetime import datetime, timedelta
+from db import DynamoDBClient
 
 
 bot = telebot.TeleBot('6284138251:AAGpCfjUCDhCynDSD9Uzv7bUrshfbyO48ZA')
@@ -15,8 +16,8 @@ waiting_for_word = {}
 word = {}
 df_where_word = {}
 keyboard_state = {}
-df = pd.read_csv('C:/Users/mike/PycharmProjects/parsing/dataframe.csv')
-df_norm = pd.read_csv('C:/Users/mike/PycharmProjects/parsing/my_dataframe.csv')
+df = DynamoDBClient.get_from_bd('News')
+df_norm = DynamoDBClient.get_from_bd('NormalizedNews')[['normalized_title', 'url', 'date', 'category']]
 
 
 class CustomErrors(Exception):

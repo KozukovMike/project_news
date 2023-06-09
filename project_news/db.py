@@ -9,12 +9,14 @@ from datetime import datetime
 
 class DBClient(ABC):
 
+    @staticmethod
     @abstractmethod
-    def to_bd(self, information: [Iterable, Dict]):
+    def to_bd(information: [Iterable, Dict]):
         pass
 
+    @staticmethod
     @abstractmethod
-    def get_from_bd(self, table_name: str):
+    def get_from_bd(table_name: str):
         pass
 
     @staticmethod
@@ -25,10 +27,12 @@ class DBClient(ABC):
 
 class PostgresClient(DBClient):
 
-    def to_bd(self):
+    @staticmethod
+    def to_bd():
         pass
 
-    def get_from_bd(self):
+    @staticmethod
+    def get_from_bd():
         pass
 
 
@@ -48,7 +52,8 @@ class DynamoDBClient(DBClient):
         'map': 'M'
     }
 
-    def to_bd(self, information: [Iterable, Dict]):
+    @staticmethod
+    def to_bd(information: [Iterable, Dict]):
         if isinstance(information, Iterable):
             condition_expression = 'attribute_not_exists(title)'
             for obj in information:
@@ -61,7 +66,8 @@ class DynamoDBClient(DBClient):
                 except Exception as e:
                     DBClient.to_error('DynamoDBClient', e)
 
-    def get_from_bd(self, table_name: str) -> pd.DataFrame:
+    @staticmethod
+    def get_from_bd(table_name: str) -> pd.DataFrame:
         try:
             response = DynamoDBClient.dynamodb_client.scan(TableName=table_name)
             items = response['Items']
@@ -78,5 +84,4 @@ class DynamoDBClient(DBClient):
             return df
         except Exception as e:
             DBClient.to_error('DynamoDBClient', e)
-        return pd.DataFrame()
 
