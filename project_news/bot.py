@@ -163,4 +163,3 @@ def sentiment_analysis_through_time(message):
 
 
 bot.polling(none_stop=True)
-

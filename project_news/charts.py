@@ -124,4 +124,3 @@ class Chart:
         pdf.showPage()
 
         # plt.show()
-

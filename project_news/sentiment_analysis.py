@@ -77,4 +77,3 @@ class SentimentAnalysis:
             check['title'] = df.loc[df_where_word_in.index, 'title'].reset_index().drop('index', axis=1)
         c.showPage()
         c.save()
-
