@@ -1,10 +1,12 @@
 import boto3
 import pandas as pd
+import psycopg2
 
 
 from abc import ABC, abstractmethod
-from typing import Iterable, Dict, List
+from typing import Iterable, List
 from datetime import datetime
+from CRUD import CRUDUrl, CRUDCategory, CRUDNews, News
 
 
 class DBClient(ABC):
@@ -16,7 +18,7 @@ class DBClient(ABC):
 
     @staticmethod
     @abstractmethod
-    def get_from_bd(table_name: str):
+    def get_from_bd(table_name: str) -> pd.DataFrame:
         pass
 
     @staticmethod
@@ -28,18 +30,45 @@ class DBClient(ABC):
 class PostgresClient(DBClient):
 
     @staticmethod
-    def to_bd():
-        pass
+    def to_bd(information: List):
+        if isinstance(information, list):
+            for obj in information:
+                try:
+                    url_bd_id = CRUDUrl.get_by_url(url_url=obj.url).id
+                    category_bd_id = CRUDCategory.get_by_category(category_category=obj.category).id
+                    news = News(
+                        title=obj.title,
+                        news_id=url_bd_id,
+                        categories_id=category_bd_id,
+                        date=obj.date
+                    )
+                    CRUDNews.add(news=news)
+                except Exception as e:
+                    DBClient.to_error('PostgresClient.to_bd', e)
 
     @staticmethod
-    def get_from_bd():
-        pass
+    def get_from_bd(table_name) -> pd.DataFrame:
+        conn = psycopg2.connect(dbname='hello3', user='postgres', password='fantasy27')
+        sql = '''
+        select title, date, url, category
+        from 
+        	news inner join urls on 
+        	news.news_id = urls.id 
+        	inner join categories on
+        	news.categories_id = categories.id;
+        '''
+        df = pd.read_sql(sql=sql, con=conn)
+        return df
 
 
 class DynamoDBClient(DBClient):
 
+    session = boto3.Session(
+        aws_access_key_id='AKIAQR4LORUH72XXVEOX',
+        aws_secret_access_key='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'
+    )
     dynamodb_client = boto3.client('dynamodb', region_name='eu-west-2')
-    dynamodb_resource = boto3.resource('dynamodb', region_name='eu-west-2')
+    dynamodb_resource = session.resource('dynamodb', region_name='eu-west-2')
     data_types = {
         'str': 'S',
         'number': 'N',
@@ -55,34 +84,29 @@ class DynamoDBClient(DBClient):
 
     @staticmethod
     def to_bd(information: List):
-        flag = True
         if isinstance(information, Iterable):
-            condition_expression = 'attribute_not_exists(title)'
             table_name = information[0].__class__.__name__
             table = DynamoDBClient.dynamodb_resource.Table(table_name)
             with table.batch_writer() as batch:
                 for obj in information:
                     try:
-                        item = {attribute: {DynamoDBClient.data_types[type(value).__name__]: value}
-                                for attribute, value in vars(obj).items()}
+                        item = {attribute: value for attribute, value in vars(obj).items()}
+                        # item = {attribute: {DynamoDBClient.data_types[type(value).__name__]: value}
+                        #         for attribute, value in vars(obj).items()}
                         batch.put_item(Item=item)
                     except Exception as e:
-                        flag = False
-                        DBClient.to_error('DynamoDBClient', e)
-        return flag
+                        DBClient.to_error('DynamoDBClient.to_bd()', e)
 
     @staticmethod
-    def get_from_bd(table_name: str) -> pd.DataFrame:
+    def get_from_db(table_name: str) -> pd.DataFrame:
         try:
-            response = DynamoDBClient.dynamodb_client.scan(TableName=table_name)
+            table = DynamoDBClient.dynamodb_resource.Table(table_name)
+            response = table.scan()
             items = response['Items']
 
             while 'LastEvaluatedKey' in response:
                 last_key = response['LastEvaluatedKey']
-                response = DynamoDBClient.dynamodb_client.scan(
-                    TableName=table_name,
-                    ExclusiveStartKey=last_key
-                )
+                response = table.scan(ExclusiveStartKey=last_key)
                 items.extend(response['Items'])
 
             df = pd.DataFrame(items)

@@ -24,9 +24,9 @@ class ParsNews(ABC):
         pass
 
     @staticmethod
-    def to_errors(url: str):
+    def to_errors(url: str, e: Exception):
         with open('news_pars_errors.txt', 'a', encoding='utf-8') as file:
-            file.write(f'{datetime.now()}, {url}\n')
+            file.write(f'{e}  {datetime.now()}, {url}\n')
 
     @staticmethod
     def preprocessing_title(all_articles: List[str]) -> List[str]:
@@ -70,7 +70,7 @@ class GoogleNews(ParsNews):
                                     url=url))
 
             except Exception as e:
-                ParsNews.to_errors(url)
+                ParsNews.to_errors(url, e)
 
         return res
 
@@ -105,7 +105,7 @@ class By024(ParsNews):
                                     url=url))
 
             except Exception as e:
-                ParsNews.to_errors(url)
+                ParsNews.to_errors(url, e)
 
         return res
 
@@ -137,7 +137,7 @@ class MinskNews(ParsNews):
                                     url=url))
 
             except Exception as e:
-                ParsNews.to_errors(url)
+                ParsNews.to_errors(url, e)
 
         return res
 
@@ -169,7 +169,7 @@ class Onliner(ParsNews):
                                     url=url))
 
             except Exception as e:
-                ParsNews.to_errors(url)
+                ParsNews.to_errors(url, e)
 
         return res
 
@@ -246,6 +246,6 @@ class Regexparser(ParsNews):
                                         url=url))
 
                 except Exception as e:
-                    ParsNews.to_errors(url)
+                    ParsNews.to_errors(url, e)
 
         return res

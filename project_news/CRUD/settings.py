@@ -1,0 +1,1 @@
+DATABASE_URL: str = 'postgresql://postgres:fantasy27@localhost:5432/hello3'
