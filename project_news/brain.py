@@ -24,8 +24,8 @@ number = {}
 
 def read_from_db():
     global df, df_norm
-    df = DynamoDBClient.get_from_db('News')
-    df_norm = DynamoDBClient.get_from_db('NormalizedNews')
+    df = DynamoDBClient.get_from_bd('News')
+    df_norm = DynamoDBClient.get_from_bd('NormalizedNews')
 
 
 @app.on_event("startup")
@@ -51,29 +51,21 @@ async def read_root():
 @app.post("/start")
 def start(data: dict):
     text = f'Здравствуйте, {data["first_name"].capitalize()} {data["last_name"].capitalize()}! ' \
-           f'напишите команду *project* для информации о проектах ' \
-           f'напишите команду *info* для информации о командах ' \
+           f'напишите слово *info* для информации о командах ' \
            f'вы можете воспользоваться кнопками в меню'
     return {'status': 'success', 'message': text}
-
-
-@app.post("/project")
-def project(data: dict):
-    pass
 
 
 @app.post("/info")
 def info(data: dict):
     text = 'команда *initialization* позволит вам начать работу бота\n' \
            'все последующие команды без предыдущей не работают!!!\n\n' \
-           'команда news высылает файл формата txt со всеми новостями, имеющие искомое слово\n\n' \
-           'команда *send_pdf1* высылает pdf file с графиком, который показывает сколько' \
+           'команда news высылает файл формата txt со всеми новостями, которые имеют задаваемое слово\n\n' \
+           'команда *send_pdf1* высылает pdf file с графиком, который показывает, сколько ' \
            'новостей с вашим словом и в каких категориях эти новости\n\n' \
            'команда *send_pdf2* высылает pdf file с 3 графиками, в которых ' \
-           'показаны самые часто упоминаемые знаменитый лица, географические объекты и большие компании\n\n' \
-           'команда *sent_analysis* показывает анализ настроения новостей с ващим словом\n\n' \
-           'команад *sent_analysis_time* позволяет сделать анализ настроения новостей во времени, ' \
-           'подробнее можно узнать вызвав эту команду\n\n'
+           'показаны самые часто упоминаемые знаменитыe лица, географические объекты и большие компании\n\n' \
+           'команда *sent_analysis* показывает анализ настроения новостей с вашим словом\n\n'
     return {'status': 'success', 'message': text}
 
 
@@ -88,11 +80,13 @@ def initialization(data: dict):
     else:
         word_normal = morph.parse(word)[0].normal_form
         df_where_word[id_] = df_where_word_in(df_norm, word_normal)
+        print(df_where_word[id_])
 
 
 @app.get("/news/{id_}")
 def news(id_: int):
-    news = df.loc[df_where_word[id_].index, 'title']
+    news = df_where_word[id_].loc[:, 'title']
+    print(news)
     number[id_] = len(news.index)
     news.to_csv(f'news{id_}.txt', index=False, sep='\t')
 
@@ -118,7 +112,7 @@ def send_pdf2(id_: int):
                         filename=f'{id_}.pdf')
 
 
-@app.post('/sent_analysis')
+@app.post('/send_analysis')
 def sent_analysis(data: dict):
     res = SentimentAnalysis.dostoevsky_analysis(df_where_word[data['id']], df)
     res = res.loc[["neutral", "positive", "negative"], :].to_string(header=False)

@@ -22,18 +22,18 @@ class CustomErrors(Exception):
 
 waiting_for_word = {}
 keyboard_state = {}
-df = pd.read_csv('C:/Users/mike/PycharmProjects/parsing/dataframe.csv')
-df_norm = pd.read_csv('C:/Users/mike/PycharmProjects/parsing/my_dataframe.csv')
+# df = pd.read_csv('C:/Users/mike/PycharmProjects/parsing/dataframe.csv')
+# df_norm = pd.read_csv('C:/Users/mike/PycharmProjects/parsing/my_dataframe.csv')
 
 keyboard1 = telebot.types.ReplyKeyboardMarkup()
-keyboard1.row('initialization', 'info', 'project')
+keyboard1.row('initialization', 'info')
 
 keyboard2 = telebot.types.ReplyKeyboardMarkup()
 keyboard2.row('news', 'send_pdf1', 'send_pdf2')
-keyboard2.row('sent_analysis_time')
+keyboard2.row('send_analysis')
 keyboard2.row('Вернуться')
 
-bot = telebot.TeleBot('6298032718:AAFXhP6CV8Muy9cLoKpPmyQf4zK7E4s6R-4')
+bot = telebot.TeleBot('6284138251:AAGpCfjUCDhCynDSD9Uzv7bUrshfbyO48ZA')
 url = 'http://127.0.0.1:8000/'
 
 
@@ -47,11 +47,6 @@ def start(message):
     res = response.json()
     if response.ok:
         bot.send_message(message.chat.id, res['message'], reply_markup=keyboard1, parse_mode='Markdown')
-
-
-@bot.message_handler(func=lambda message: message.text == 'project')
-def project(message):
-    pass
 
 
 @bot.message_handler(func=lambda message: message.text == 'info')
@@ -139,11 +134,11 @@ def send_pdf2(message):
         CustomErrors.to_file('errors', e, 'send_pdf2', message)
 
 
-@bot.message_handler(func=lambda message: message.text == 'sent_analysis')
+@bot.message_handler(func=lambda message: message.text == 'send_analysis')
 def sentiment_analysis(message):
     bot.send_message(message.chat.id, 'Это может занять некоторое время')
     try:
-        response = requests.post(url=f'{url}sent_analysis', json={'id': message.chat.id})
+        response = requests.post(url=f'{url}send_analysis', json={'id': message.chat.id})
         res = response.json()
         if response.status_code == 200:
             bot.send_message(message.chat.id, res['message'])

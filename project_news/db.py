@@ -48,15 +48,19 @@ class PostgresClient(DBClient):
 
     @staticmethod
     def get_from_bd(table_name) -> pd.DataFrame:
-        conn = psycopg2.connect(dbname='hello3', user='postgres', password='fantasy27')
+        conn = psycopg2.connect(dbname='DS2023',
+                                user='misha',
+                                password='bMAAO6l63J9I',
+                                host='projects.csradvigauhb.eu-west-2.rds.amazonaws.com',
+                                port='5432'
+                                )
+
         sql = '''
-        select title, date, url, category
-        from 
-        	news inner join urls on 
-        	news.news_id = urls.id 
-        	inner join categories on
-        	news.categories_id = categories.id;
-        '''
+                SELECT title, date, url, category
+                FROM misha.news
+                INNER JOIN misha.urls ON news.news_id = urls.id 
+                INNER JOIN misha.categories ON news.categories_id = categories.id;
+            '''
         df = pd.read_sql(sql=sql, con=conn)
         return df
 
@@ -91,14 +95,12 @@ class DynamoDBClient(DBClient):
                 for obj in information:
                     try:
                         item = {attribute: value for attribute, value in vars(obj).items()}
-                        # item = {attribute: {DynamoDBClient.data_types[type(value).__name__]: value}
-                        #         for attribute, value in vars(obj).items()}
                         batch.put_item(Item=item)
                     except Exception as e:
                         DBClient.to_error('DynamoDBClient.to_bd()', e)
 
     @staticmethod
-    def get_from_db(table_name: str) -> pd.DataFrame:
+    def get_from_bd(table_name: str) -> pd.DataFrame:
         try:
             table = DynamoDBClient.dynamodb_resource.Table(table_name)
             response = table.scan()

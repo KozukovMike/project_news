@@ -1,6 +1,5 @@
 import telebot
 import pymorphy3
-import pandas as pd
 
 
 from normalize import df_where_word_in
