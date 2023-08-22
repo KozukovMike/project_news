@@ -1,12 +1,17 @@
 import boto3
 import pandas as pd
 import psycopg2
+import os
+from dotenv import load_dotenv
 
 
 from abc import ABC, abstractmethod
 from typing import Iterable, List
 from datetime import datetime
 from CRUD import CRUDUrl, CRUDCategory, CRUDNews, News
+
+
+load_dotenv()
 
 
 class DBClient(ABC):
@@ -23,7 +28,7 @@ class DBClient(ABC):
 
     @staticmethod
     def to_error(name: str, error: Exception):
-        with open('db_errors.txt', 'a') as f:
+        with open('../db_errors.txt', 'a') as f:
             f.write(f'{name}, {error}, {datetime.now()}\n')
 
 
@@ -48,11 +53,18 @@ class PostgresClient(DBClient):
 
     @staticmethod
     def get_from_bd(table_name) -> pd.DataFrame:
-        conn = psycopg2.connect(dbname='DS2023',
-                                user='misha',
-                                password='bMAAO6l63J9I',
-                                host='projects.csradvigauhb.eu-west-2.rds.amazonaws.com',
-                                port='5432'
+
+        dbname = os.getenv('DBNAME')
+        user = os.getenv('USER')
+        password = os.getenv('PASSWORD')
+        host = os.getenv('HOST')
+        port = os.getenv('PORT')
+
+        conn = psycopg2.connect(dbname=dbname,
+                                user=user,
+                                password=password,
+                                host=host,
+                                port=port
                                 )
 
         sql = '''
@@ -67,9 +79,12 @@ class PostgresClient(DBClient):
 
 class DynamoDBClient(DBClient):
 
+    aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+    aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+
     session = boto3.Session(
-        aws_access_key_id='AKIAQR4LORUH72XXVEOX',
-        aws_secret_access_key='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'
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key
     )
     dynamodb_client = boto3.client('dynamodb', region_name='eu-west-2')
     dynamodb_resource = session.resource('dynamodb', region_name='eu-west-2')
@@ -115,4 +130,3 @@ class DynamoDBClient(DBClient):
             return df
         except Exception as e:
             DBClient.to_error('DynamoDBClient', e)
-

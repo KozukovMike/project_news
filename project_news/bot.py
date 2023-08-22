@@ -2,11 +2,11 @@ import telebot
 import pymorphy3
 
 
-from normalize import df_where_word_in
-from charts import Chart
-from sentiment_analysis import SentimentAnalysis
+from brain.normalize import df_where_word_in
+from brain.charts import Chart
+from brain.sentiment_analysis import SentimentAnalysis
 from datetime import datetime, timedelta
-from db import DynamoDBClient
+from brain.db import DynamoDBClient
 
 
 bot = telebot.TeleBot('6284138251:AAGpCfjUCDhCynDSD9Uzv7bUrshfbyO48ZA')

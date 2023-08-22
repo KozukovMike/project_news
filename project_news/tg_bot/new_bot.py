@@ -1,7 +1,10 @@
 import io
+import os
+from dotenv import load_dotenv
+
+
 import requests
 import telebot
-import pandas as pd
 
 from datetime import datetime
 
@@ -22,8 +25,6 @@ class CustomErrors(Exception):
 
 waiting_for_word = {}
 keyboard_state = {}
-# df = pd.read_csv('C:/Users/mike/PycharmProjects/parsing/dataframe.csv')
-# df_norm = pd.read_csv('C:/Users/mike/PycharmProjects/parsing/my_dataframe.csv')
 
 keyboard1 = telebot.types.ReplyKeyboardMarkup()
 keyboard1.row('initialization', 'info')
@@ -33,8 +34,13 @@ keyboard2.row('news', 'send_pdf1', 'send_pdf2')
 keyboard2.row('send_analysis')
 keyboard2.row('Вернуться')
 
-bot = telebot.TeleBot('6284138251:AAGpCfjUCDhCynDSD9Uzv7bUrshfbyO48ZA')
-url = 'http://127.0.0.1:8000/'
+load_dotenv()
+TG_API_TOKEN = os.getenv('A')
+bot = telebot.TeleBot(TG_API_TOKEN)
+BRAIN_URL = os.getenv('BRAIN_URL')
+BRAIN_PORT = os.getenv('BRAIN_PORT')
+url = f'https://{BRAIN_URL}:{BRAIN_PORT}/'
+# url = 'http://0.0.0.0:1276/'
 
 
 @bot.message_handler(commands=['start'])
@@ -99,9 +105,9 @@ def get_news(message):
             with open(f'news{id_}.txt', 'rb') as file:
                 bot.send_document(message.chat.id, file)
         else:
-            CustomErrors.to_file('errors', requests.exceptions.HTTPError, 'news', message)
+            CustomErrors.to_file('../errors', requests.exceptions.HTTPError, 'news', message)
     except Exception as e:
-        CustomErrors.to_file('errors', e, 'news', message)
+        CustomErrors.to_file('../errors', e, 'news', message)
 
 
 @bot.message_handler(func=lambda message: message.text == 'send_pdf1')
@@ -114,9 +120,9 @@ def send_pdf1(message):
             pdf_content = response.content
             bot.send_document(message.chat.id, io.BytesIO(pdf_content), visible_file_name=f'{id_}.pdf')
         else:
-            CustomErrors.to_file('errors', requests.exceptions.HTTPError, 'send_pdf1', message)
+            CustomErrors.to_file('../errors', requests.exceptions.HTTPError, 'send_pdf1', message)
     except Exception as e:
-        CustomErrors.to_file('errors', e, 'send_pdf1', message)
+        CustomErrors.to_file('../errors', e, 'send_pdf1', message)
 
 
 @bot.message_handler(func=lambda message: message.text == 'send_pdf2')
@@ -129,9 +135,9 @@ def send_pdf2(message):
             pdf_content = response.content
             bot.send_document(message.chat.id, io.BytesIO(pdf_content), visible_file_name=f'{id_}.pdf')
         else:
-            CustomErrors.to_file('errors', requests.exceptions.HTTPError, 'send_pdf2', message)
+            CustomErrors.to_file('../errors', requests.exceptions.HTTPError, 'send_pdf2', message)
     except Exception as e:
-        CustomErrors.to_file('errors', e, 'send_pdf2', message)
+        CustomErrors.to_file('../errors', e, 'send_pdf2', message)
 
 
 @bot.message_handler(func=lambda message: message.text == 'send_analysis')
@@ -143,9 +149,9 @@ def sentiment_analysis(message):
         if response.status_code == 200:
             bot.send_message(message.chat.id, res['message'])
         else:
-            CustomErrors.to_file('errors', requests.exceptions.HTTPError, 'sent_analysis', message)
+            CustomErrors.to_file('../errors', requests.exceptions.HTTPError, 'sent_analysis', message)
     except Exception as e:
-        CustomErrors.to_file('errors', e, 'sent_analysis', message)
+        CustomErrors.to_file('../errors', e, 'sent_analysis', message)
 
 
 @bot.message_handler(func=lambda message: message.text == 'Вернуться')

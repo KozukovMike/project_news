@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import List
 
 
-from constanta import News
+from brain.constanta import News
 
 
 class ParsNews(ABC):

@@ -1,0 +1,20 @@
+version: '3.5'
+
+services:
+
+  brain:
+    build: brain/.
+    container_name: da87ffc367b59452cb4ebc63c325caa7a6b714e8922debb5cc6055a759fcc2e3
+    restart: unless-stopped
+    ports:
+      - "1276:1276"
+
+
+  telegram-bot:
+    build: tg_bot/.
+    container_name: tg_bot
+    restart: unless-stopped
+    environment:
+      - 'BRAIN_URL=brain'
+      - 'BRAIN_PORT=1276'
+

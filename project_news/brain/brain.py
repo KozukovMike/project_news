@@ -1,5 +1,6 @@
 import pandas as pd
 import pymorphy3
+import uvicorn
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse, FileResponse
@@ -101,14 +102,14 @@ def get_number(data: dict):
 @app.get('/send_pdf1/{id_}')
 def send_pdf1(id_: int):
     Chart.box_plot_mentions(df_where_word[id_])
-    return FileResponse('example.pdf', media_type='application/pdf',
+    return FileResponse('../example.pdf', media_type='application/pdf',
                         filename=f'{id_}.pdf')
 
 
 @app.get('/send_pdf2/{id_}')
 def send_pdf2(id_: int):
     Chart.big_names(df_where_word[id_],  df)
-    return FileResponse('example1.pdf', media_type='application/pdf',
+    return FileResponse('../example1.pdf', media_type='application/pdf',
                         filename=f'{id_}.pdf')
 
 
@@ -117,3 +118,8 @@ def sent_analysis(data: dict):
     res = SentimentAnalysis.dostoevsky_analysis(df_where_word[data['id']], df)
     res = res.loc[["neutral", "positive", "negative"], :].to_string(header=False)
     return {'status': 'success', 'message': res}
+
+
+if __name__ == '__main__':
+    uvicorn.run(app='brain:app', host='0.0.0.0', port=1276,  reload=True)
+

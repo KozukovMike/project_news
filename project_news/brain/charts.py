@@ -36,7 +36,7 @@ class Chart:
 
         plt.subplots_adjust(bottom=0.3, top=0.7, left=0.1, right=0.9)
         plt.savefig('chart.png')
-        pdf = canvas.Canvas('example.pdf')
+        pdf = canvas.Canvas('../example.pdf')
         pdf.drawImage('chart.png', 0, 650)
         pdf.save()
         # plt.show()
@@ -92,7 +92,7 @@ class Chart:
         plt.xticks(rotation=90)
 
         plt.savefig('chart1.png')
-        pdf = canvas.Canvas('example1.pdf')
+        pdf = canvas.Canvas('../example1.pdf')
         pdf.drawImage('chart1.png', 0, 450)
         pdf.showPage()
 
