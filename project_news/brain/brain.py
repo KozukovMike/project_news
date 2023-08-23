@@ -49,6 +49,11 @@ async def read_root():
             }
 
 
+@app.get("/ping")
+def ping():
+    return "pong"
+
+
 @app.post("/start")
 def start(data: dict):
     text = f'Здравствуйте, {data["first_name"].capitalize()} {data["last_name"].capitalize()}! ' \

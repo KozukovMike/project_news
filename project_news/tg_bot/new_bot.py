@@ -37,9 +37,9 @@ keyboard2.row('Вернуться')
 load_dotenv()
 TG_API_TOKEN = os.getenv('A')
 bot = telebot.TeleBot(TG_API_TOKEN)
-BRAIN_URL = os.getenv('BRAIN_URL')
-BRAIN_PORT = os.getenv('BRAIN_PORT')
-url = f'https://{BRAIN_URL}:{BRAIN_PORT}/'
+BRAIN_URL = os.environ['BRAIN_URL']
+BRAIN_PORT = os.environ['BRAIN_PORT']
+url = f'http://{BRAIN_URL}:{BRAIN_PORT}/'
 # url = 'http://0.0.0.0:1276/'
 
 

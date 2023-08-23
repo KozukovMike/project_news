@@ -4,10 +4,10 @@ services:
 
   brain:
     build: brain/.
-    container_name: da87ffc367b59452cb4ebc63c325caa7a6b714e8922debb5cc6055a759fcc2e3
+    container_name: brain
     restart: unless-stopped
     ports:
-      - "1276:1276"
+      - "9789:1276"
 
 
   telegram-bot:
