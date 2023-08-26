@@ -35,7 +35,7 @@ keyboard2.row('send_analysis')
 keyboard2.row('Вернуться')
 
 load_dotenv()
-TG_API_TOKEN = os.getenv('A')
+TG_API_TOKEN = os.getenv('TG_API_TOKEN')
 bot = telebot.TeleBot(TG_API_TOKEN)
 BRAIN_URL = os.environ['BRAIN_URL']
 BRAIN_PORT = os.environ['BRAIN_PORT']

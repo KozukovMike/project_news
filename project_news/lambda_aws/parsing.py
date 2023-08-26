@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import List
 
 
-from brain.constanta import News
+from constanta import News
 
 
 class ParsNews(ABC):
@@ -25,7 +25,7 @@ class ParsNews(ABC):
 
     @staticmethod
     def to_errors(url: str, e: Exception):
-        with open('news_pars_errors.txt', 'a', encoding='utf-8') as file:
+        with open('../news_pars_errors.txt', 'a', encoding='utf-8') as file:
             file.write(f'{e}  {datetime.now()}, {url}\n')
 
     @staticmethod
