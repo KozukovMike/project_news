@@ -1,7 +1,7 @@
 import pymorphy3
 
 
-from brain.constanta import News, NormalizedNews
+from constanta import News, NormalizedNews
 from typing import List
 
 

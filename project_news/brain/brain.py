@@ -27,6 +27,9 @@ def read_from_db():
     global df, df_norm
     df = DynamoDBClient.get_from_bd('News')
     df_norm = DynamoDBClient.get_from_bd('NormalizedNews')
+    merged_df = df_norm.loc[:, ['category', 'date', 'url', 'title']] \
+        .merge(df, on=['category', 'date', 'url', 'title'], how='inner')
+    df = merged_df
 
 
 @app.on_event("startup")
@@ -106,15 +109,15 @@ def get_number(data: dict):
 
 @app.get('/send_pdf1/{id_}')
 def send_pdf1(id_: int):
-    Chart.box_plot_mentions(df_where_word[id_])
-    return FileResponse('../example.pdf', media_type='application/pdf',
+    Chart.box_plot_mentions(df_where_word[id_], id_)
+    return FileResponse(f'../example{id_}.pdf', media_type='application/pdf',
                         filename=f'{id_}.pdf')
 
 
 @app.get('/send_pdf2/{id_}')
 def send_pdf2(id_: int):
-    Chart.big_names(df_where_word[id_],  df)
-    return FileResponse('../example1.pdf', media_type='application/pdf',
+    Chart.big_names(df_where_word[id_],  df, id_)
+    return FileResponse(f'../exampLe{id_}.pdf', media_type='application/pdf',
                         filename=f'{id_}.pdf')
 
 

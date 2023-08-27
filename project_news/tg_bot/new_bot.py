@@ -40,7 +40,7 @@ bot = telebot.TeleBot(TG_API_TOKEN)
 BRAIN_URL = os.environ['BRAIN_URL']
 BRAIN_PORT = os.environ['BRAIN_PORT']
 url = f'http://{BRAIN_URL}:{BRAIN_PORT}/'
-# url = 'http://0.0.0.0:1276/'
+# url = 'http://127.0.0.1:8000/'
 
 
 @bot.message_handler(commands=['start'])

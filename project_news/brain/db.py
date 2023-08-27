@@ -106,13 +106,17 @@ class DynamoDBClient(DBClient):
         if isinstance(information, Iterable):
             table_name = information[0].__class__.__name__
             table = DynamoDBClient.dynamodb_resource.Table(table_name)
-            with table.batch_writer() as batch:
-                for obj in information:
-                    try:
-                        item = {attribute: value for attribute, value in vars(obj).items()}
-                        batch.put_item(Item=item)
-                    except Exception as e:
-                        DBClient.to_error('DynamoDBClient.to_bd()', e)
+            for i in range(len(information) // 5000 + 1):
+                data = information[i * 5000:(i + 1) * 5000]
+                with table.batch_writer() as batch:
+                    print('batch')
+                    for obj in data:
+                        try:
+                            item = {attribute: value for attribute, value in vars(obj).items()}
+                            batch.put_item(Item=item)
+                        except Exception as e:
+                            print(e, 'EXCEPTION')
+                            DBClient.to_error('DynamoDBClient.to_bd()', e)
 
     @staticmethod
     def get_from_bd(table_name: str) -> pd.DataFrame:
